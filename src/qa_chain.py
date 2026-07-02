@@ -3,13 +3,9 @@ from langchain.chains.retrieval import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
 from src.retriever import load_vectorstore
-import os
-from dotenv import load_dotenv
+from src.llm import _get_api_key
 
-
-load_dotenv()
-
-QA_SYSTEM_PROMPT = """You are an expert research assistant. 
+QA_SYSTEM_PROMPT = """You are an expert research assistant.
 Answer questions strictly based on the provided research paper excerpts.
 
 Rules:
@@ -25,22 +21,18 @@ Chat history:
 {chat_history}
 """
 
-
 def build_qa_chain():
-    """Build a retrieval-augmented QA chain using Groq LLM."""
     llm = ChatGroq(
-         model="llama-3.1-8b-instant",
+        model="llama-3.1-8b-instant",
         temperature=0.2,
         max_tokens=512,
-        api_key=os.environ.get("GROQ_API_KEY"),
+        api_key=_get_api_key(),
     )
 
-    prompt = ChatPromptTemplate.from_messages(
-        [
-            ("system", QA_SYSTEM_PROMPT),
-            ("human", "{input}"),
-        ]
-    )
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", QA_SYSTEM_PROMPT),
+        ("human", "{input}"),
+    ])
 
     vectorstore = load_vectorstore()
     retriever = vectorstore.as_retriever(
@@ -49,6 +41,4 @@ def build_qa_chain():
     )
 
     combine_chain = create_stuff_documents_chain(llm, prompt)
-    qa_chain = create_retrieval_chain(retriever, combine_chain)
-
-    return qa_chain
+    return create_retrieval_chain(retriever, combine_chain)
