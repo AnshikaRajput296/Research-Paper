@@ -1,9 +1,9 @@
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 from langchain_groq import ChatGroq
 from src.retriever import load_vectorstore
 from src.llm import _get_api_key
+
 
 QA_SYSTEM_PROMPT = """You are an expert research assistant.
 Answer questions strictly based on the provided research paper excerpts.
@@ -19,7 +19,15 @@ Context from papers:
 
 Chat history:
 {chat_history}
-"""
+
+Question: {input}
+
+Answer:"""
+
+
+def _format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
 
 def build_qa_chain():
     llm = ChatGroq(
@@ -29,10 +37,7 @@ def build_qa_chain():
         api_key=_get_api_key(),
     )
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", QA_SYSTEM_PROMPT),
-        ("human", "{input}"),
-    ])
+    prompt = ChatPromptTemplate.from_template(QA_SYSTEM_PROMPT)
 
     vectorstore = load_vectorstore()
     retriever = vectorstore.as_retriever(
@@ -40,5 +45,19 @@ def build_qa_chain():
         search_kwargs={"k": 3, "fetch_k": 6},
     )
 
-    combine_chain = create_stuff_documents_chain(llm, prompt)
-    return create_retrieval_chain(retriever, combine_chain)
+    def retrieve_and_answer(input_dict):
+        question = input_dict["input"]
+        chat_history = input_dict.get("chat_history", "")
+        docs = retriever.invoke(question)
+        context = _format_docs(docs)
+
+        chain = prompt | llm | StrOutputParser()
+        answer = chain.invoke({
+            "context": context,
+            "chat_history": chat_history,
+            "input": question,
+        })
+
+        return {"answer": answer, "context": docs}
+
+    return retrieve_and_answer
