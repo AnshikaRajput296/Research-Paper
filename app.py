@@ -19,7 +19,7 @@ st.set_page_config(
     page_icon="📄",
 )
 
-st.title("📄 Research Paper QA Assistant")
+st.title(" Research Paper QA Assistant")
 
 st.markdown(
     """
@@ -58,7 +58,7 @@ if "ragas_results" not in st.session_state:
 
 with st.sidebar:
 
-    st.header("📂 Document Upload")
+    st.header(" Document Upload")
 
     uploaded_files = st.file_uploader(
         "Upload PDF Research Papers",
@@ -67,7 +67,7 @@ with st.sidebar:
     )
 
     if uploaded_files:
-        if st.button("⚙️ Process Papers", use_container_width=True):
+        if st.button(" Process Papers", use_container_width=True):
             with st.spinner("Processing papers…"):
                 pdf_paths = save_uploaded_files(uploaded_files)
                 documents = load_documents(pdf_paths)
@@ -93,7 +93,7 @@ with st.sidebar:
     st.divider()
 
     if st.session_state.vectorstore_ready:
-        st.markdown("**📊 Index Stats**")
+        st.markdown("** Index Stats**")
         paper_names = sorted(
             {
                 doc.metadata.get("paper", "Unknown")
@@ -107,7 +107,7 @@ with st.sidebar:
 
         st.divider()
 
-    if st.button("🗑️ Clear Chat", use_container_width=True):
+    if st.button(" Clear Chat", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
 
@@ -128,7 +128,7 @@ mode = st.radio(
 if mode == "💬 Question Answering":
 
     if not st.session_state.vectorstore_ready:
-        st.info("⬅️ Upload and process PDFs first using the sidebar.")
+        st.info("Upload and process PDFs first using the sidebar.")
     else:
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
@@ -139,7 +139,7 @@ if mode == "💬 Question Answering":
         if user_question:
 
             if is_prompt_injection(user_question):
-                st.error("🚨 Potential prompt injection detected. Please ask a genuine question.")
+                st.error(" Potential prompt injection detected. Please ask a genuine question.")
                 st.stop()
 
             st.session_state.messages.append({"role": "user", "content": user_question})
@@ -163,10 +163,10 @@ if mode == "💬 Question Answering":
                     context_docs = response.get("context", [])
 
                     if not context_docs:
-                        answer = "⚠️ No relevant information found in uploaded papers."
+                        answer = " No relevant information found in uploaded papers."
                     elif not validate_response_scope(answer):
                         answer = (
-                            "⚠️ The uploaded papers do not contain sufficient "
+                            " The uploaded papers do not contain sufficient "
                             "information to answer this question."
                         )
 
@@ -174,7 +174,7 @@ if mode == "💬 Question Answering":
 
                     citations = format_citations(context_docs)
                     if citations:
-                        st.markdown("### 📚 Sources")
+                        st.markdown("###  Sources")
                         for citation in citations:
                             st.markdown(f"- {citation}")
 
@@ -208,7 +208,7 @@ elif mode == "📝 Paper Summary":
         if summary_mode == "Single Paper Summary":
             selected_paper = st.selectbox("Select Paper", paper_names)
 
-            if st.button("📝 Generate Summary"):
+            if st.button(" Generate Summary"):
                 if selected_paper not in st.session_state.summary_cache:
                     with st.spinner(
                         f"Reading all pages of '{selected_paper}' and generating summary…"
@@ -220,14 +220,14 @@ elif mode == "📝 Paper Summary":
                 else:
                     st.info("Showing cached summary.")
 
-                st.markdown(f"# 📄 {selected_paper}")
+                st.markdown(f"#  {selected_paper}")
                 st.markdown(st.session_state.summary_cache[selected_paper])
 
         # ----------------------------------
         # ALL PAPERS
         # ----------------------------------
         elif summary_mode == "All Papers Summary":
-            if st.button("📝 Generate All Summaries"):
+            if st.button(" Generate All Summaries"):
                 if st.session_state.all_summaries_cache is None:
                     with st.spinner("Generating comprehensive summaries for all papers…"):
                         st.session_state.all_summaries_cache = summarize_all_papers(
@@ -249,7 +249,7 @@ elif mode == "📝 Paper Summary":
                 st.warning("⚠️ Upload at least 2 papers to compare.")
             else:
                 st.markdown(f"Comparing **{len(paper_names)} papers**: {', '.join(paper_names)}")
-                if st.button("🔍 Compare Papers"):
+                if st.button(" Compare Papers"):
                     if st.session_state.comparison_cache is None:
                         with st.spinner("Performing comparative analysis…"):
                             st.session_state.comparison_cache = compare_papers(
@@ -258,7 +258,7 @@ elif mode == "📝 Paper Summary":
                     else:
                         st.info("Showing cached comparison.")
 
-                    st.markdown("# 🔍 Comparative Analysis")
+                    st.markdown("#  Comparative Analysis")
                     st.markdown(st.session_state.comparison_cache)
 
 # ==================================================
@@ -270,7 +270,7 @@ elif mode == "📊 RAGAS Evaluation":
     if not st.session_state.vectorstore_ready:
         st.info("⬅️ Upload and process PDFs first using the sidebar.")
     else:
-        st.markdown("## 📊 RAGAS Pipeline Evaluation")
+        st.markdown("##  RAGAS Pipeline Evaluation")
         st.markdown(
             """
             Evaluate your RAG pipeline quality using **4 key metrics**:
@@ -286,7 +286,7 @@ elif mode == "📊 RAGAS Evaluation":
         st.divider()
 
         # Custom question editor
-        with st.expander("✏️ Customize Test Questions", expanded=False):
+        with st.expander(" Customize Test Questions", expanded=False):
             st.markdown("Edit or add questions below (one per line):")
             default_text = "\n".join(DEFAULT_TEST_QUESTIONS)
             custom_questions_raw = st.text_area(
@@ -302,7 +302,7 @@ elif mode == "📊 RAGAS Evaluation":
             ]
             st.markdown(f"**{len(test_questions)} questions** will be evaluated.")
 
-        if st.button("🚀 Run RAGAS Evaluation", use_container_width=True):
+        if st.button(" Run RAGAS Evaluation", use_container_width=True):
             progress_bar = st.progress(0)
             status_text = st.empty()
 
@@ -320,7 +320,7 @@ elif mode == "📊 RAGAS Evaluation":
                 )
 
             progress_bar.progress(1.0)
-            status_text.markdown("✅ Evaluation complete!")
+            status_text.markdown(" Evaluation complete!")
 
         # Display results
         if st.session_state.ragas_results:
@@ -328,7 +328,7 @@ elif mode == "📊 RAGAS Evaluation":
             metrics = results["metrics"]
 
             st.divider()
-            st.markdown("### 🏆 Overall Scores")
+            st.markdown("###  Overall Scores")
             st.caption(f"Evaluated {results['num_questions']} questions · {results['timestamp']}")
 
             col1, col2, col3, col4 = st.columns(4)
@@ -363,7 +363,7 @@ elif mode == "📊 RAGAS Evaluation":
             st.markdown(f"**Overall RAG Quality:** {quality} (avg: {avg_score:.2f})")
 
             st.divider()
-            st.markdown("### 📋 Per-Question Breakdown")
+            st.markdown("###  Per-Question Breakdown")
 
             for i, item in enumerate(results["per_question"], 1):
                 with st.expander(f"Q{i}: {item['question'][:80]}…"):
@@ -380,7 +380,7 @@ elif mode == "📊 RAGAS Evaluation":
 
             # Resume-ready summary
             st.divider()
-            st.markdown("### 📄 Resume-Ready Summary")
+            st.markdown("###  Resume-Ready Summary")
             st.code(
                 f"Evaluated RAG pipeline using RAGAS-style LLM-as-judge — achieved "
                 f"{metrics['faithfulness']:.2f} answer faithfulness and "
