@@ -1,4 +1,4 @@
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 
 
 def format_citations(context_docs: list[Document]) -> list[str]:
