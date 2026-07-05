@@ -17,7 +17,7 @@ import re
 import time
 import random
 from langchain_groq import ChatGroq
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 from src.llm import _get_api_key, _parse_suggested_wait
 
 MODEL_NAME = "llama-3.1-8b-instant"
