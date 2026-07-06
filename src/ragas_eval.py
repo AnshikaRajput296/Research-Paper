@@ -167,7 +167,7 @@ def run_ragas_evaluation(
 
         try:
             # Run the RAG chain
-            response = qa_chain.invoke(
+            response = qa_chain(
                 {"input": question, "chat_history": ""}
             )
             answer = response.get("answer", "")

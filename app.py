@@ -155,7 +155,7 @@ if mode == "💬 Question Answering":
 
             with st.chat_message("assistant"):
                 with st.spinner("Searching papers…"):
-                    response = st.session_state.qa_chain.invoke(
+                    response = st.session_state.qa_chain(
                         {"input": user_question, "chat_history": history_text}
                     )
 
