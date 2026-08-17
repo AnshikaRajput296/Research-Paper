@@ -31,7 +31,7 @@ def _format_docs(docs):
 
 def build_qa_chain():
     llm = ChatGroq(
-        model="llama-3.1-8b-instant",
+        model="openai/gpt-oss-20b",
         temperature=0.2,
         max_tokens=512,
         api_key=_get_api_key(),
