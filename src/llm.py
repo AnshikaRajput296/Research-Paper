@@ -4,7 +4,7 @@ import time
 import random
 from langchain_groq import ChatGroq
 
-MODEL_NAME = "llama-3.1-8b-instant"
+MODEL_NAME = "openai/gpt-oss-20b"
 MAX_RETRIES = 5
 BASE_WAIT = 3
 
